@@ -14,12 +14,18 @@ class WordListAdapter internal constructor(
     context: Context
 ) : RecyclerView.Adapter<WordListAdapter.WordViewHolder>() {
 
+
+    interface OnWordListAdapterListener {
+        fun onDeleteItem(word: Word)
+    }
+
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var words = emptyList<Word>() // Cached copy of words
+    var listener: OnWordListAdapterListener? = null
 
     inner class WordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val wordItemView: TextView = itemView.findViewById(R.id.textView)
-
+        val deleteWordImageView: ImageView = itemView.findViewById(R.id.deleteWord)
     }
 
 
@@ -33,6 +39,9 @@ class WordListAdapter internal constructor(
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
         val current = words[position]
         holder.wordItemView.text = current.word
+        holder.deleteWordImageView.setOnClickListener(View.OnClickListener {
+            listener?.onDeleteItem(current)
+        })
     }
 
     public fun getWordAt(position: Int): Word {
@@ -40,6 +49,7 @@ class WordListAdapter internal constructor(
     }
 
     internal fun setWords(words: List<Word>) {
+
         this.words = words
         notifyDataSetChanged()
     }
